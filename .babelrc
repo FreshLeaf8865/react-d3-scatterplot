@@ -1,5 +1,5 @@
 {
-	"preset": [
+	"presets": [
 		["latest", { "modules": false }],
 		"react"
 	]
