@@ -1,28 +1,65 @@
 const path = require('path');
- 
-module.exports = {
-  context: path.join(__dirname, 'src'),
-  entry: [
-    './main.js',
-  ],
-  output: {
-    path: path.join(__dirname, 'www'),
-    filename: 'bundle.js',
+const webpack = require('webpack');
+const validate = require('webpack-validator');
+const APP_FOLDER = 'app';
+const INIT_FILE = 'index.js';
+const BUILD_DIR = 'build';
+
+const config = {
+  entry: {
+        app: path.join(__dirname, APP_FOLDER, INIT_FILE)
   },
+  output: {
+    path: path.join(__dirname, BUILD_DIR),
+    filename: 'bundle.js'
+  },
+  devServer: {
+    historyApiFallback: true,
+    inline: true,
+    host: 'localhost',
+    port:8080,
+    contentBase: __dirname + '/build',
+  },
+  watchOptions: {
+    aggregateTimeout: 100,
+    poll: 100
+  },
+  watch:true,
+  devtool: 'eval-source-map',
   module: {
-    rules: [
+    loaders: [
       {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: [
-          'babel-loader',
-        ],
+        test: /\.css$/,
+        loaders: ['style', 'css'],
+        include: path.join(__dirname, APP_FOLDER)
       },
-    ],
+      {
+        test: /\.scss$/,
+        loaders: ['style', 'css', 'postcss', 'sass']
+      },
+      {
+        test: /\.jsx?$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+        query: {
+          presets: ['es2015', 'react'],
+          plugins: ['syntax-object-rest-spread']
+        }
+      }
+    ]
   },
   resolve: {
-    modules: [
-      path.join(__dirname, 'node_modules'),
+    root: [
+      path.join(__dirname, APP_FOLDER)
     ],
+    modulesDirectories: [
+      'node_modules'
+    ],
+    extensions: ['', '.js', '.jsx']
   },
+  postcss: function() {
+    return [require('autoprefixer')];
+  }
 };
+
+module.exports = validate(config);
