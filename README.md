@@ -7,25 +7,14 @@ Welcome.
 Usage
 ---
  
-Start the development server with this command:
- 
-
-npm start
-
- 
- 
- 
 Setup
----
- 
-
-npm install
-
- 
- 
- 
-Compile
----
  
 ```
-npm run compile
+npm install
+```
+
+Start the development server
+
+```
+npm start
+```
