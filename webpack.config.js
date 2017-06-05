@@ -38,6 +38,10 @@ const config = {
         loaders: ['style', 'css', 'postcss', 'sass']
       },
       {
+        test: /\.json$/,
+        loader: 'json'
+      },
+      {
         test: /\.jsx?$/,
         loader: 'babel-loader',
         exclude: /node_modules/,
