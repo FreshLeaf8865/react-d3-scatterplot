@@ -1,18 +1,8 @@
 import React from 'react';
-import coords from './const';
+import {WIDTH, VB_WIDTH, COLORS} from './const';
 import * as d3 from 'd3'
+const coords = require('./coords.json');
 
-const WIDTH = 500;
-const VB_WIDTH = 1000;
-
-const COLORS = [
-    ["#ededed", 6],
-    ["#f1dfc1", 5],
-    ["#facf84", 4],
-    ["#ffb33c", 3],
-    ["#ff9100", 2],
-    ["#ff6100", 1]
-];
 
 export default class App extends React.Component {
     constructor(props) {
