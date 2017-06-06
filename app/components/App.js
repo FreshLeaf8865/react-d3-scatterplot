@@ -1,8 +1,12 @@
 import React from 'react';
 import {WIDTH, VB_WIDTH, COLORS} from './const';
 import * as d3 from 'd3'
+
 const coords = require('./coords.json');
 
+const TOOLTIP_WIDTH = 160
+const TOOLTIP_HEIGHT = 190
+const TOOLTIP_IMAGE_OFFSET = 20
 
 export default class App extends React.Component {
     constructor(props) {
@@ -48,7 +52,6 @@ export default class App extends React.Component {
     }
 
     componentDidMount () {
-
         const svg = d3.select(this.refs.svg);
 
         for (let key in this.groupedPoints) {
@@ -76,35 +79,55 @@ export default class App extends React.Component {
                     .attr('fill', point.color)
                     .style('cursor', 'pointer')
                     .on('mouseover', () => {
-                        let content = d3.select("#content").append("div")
-                            .attr('id', point.id)
-                            .attr('id', 'textBlock')
-
-                        content.append("img")
-                            .attr('src', point.imageUrl)
-                            .style('width','80px');
-
-                        content.append("p")
-                            .text(point.label)
-                            .style('margin','3px 5px');
-
-                        content
-                            .style('left', function () {
-                                const halfWidth = this.getBoundingClientRect().width / 2
-
-                                return `${x / 2 - halfWidth}px`
-                            })
-                            .style('top', function () {
-                                const height = this.getBoundingClientRect().height
-
-                                return `${y / 2 - height - 10}px`
-                            });
+                        this._appendTooltip(svg, point, {
+                            x,
+                            y
+                        })
+                    })
+                    .on('click', () => {
+                        this._appendTooltip(svg, point, {
+                            x,
+                            y
+                        })
                     })
                     .on('mouseout', () => {
-                          d3.select("#textBlock").remove()
+                        svg.select(`#tooltip${point.id}`).remove()
                     })
             })
         }
+    }
+
+    _appendTooltip (svg, point, config={}) {
+        const tooltip = svg.select('.tooltips-group')
+            .append('g')
+            .attr('id', `tooltip${point.id}`)
+            .attr('transform', `translate(${config.x - TOOLTIP_WIDTH / 2}, ${config.y - TOOLTIP_HEIGHT - 10})`)
+            .classed('chart-tooltip', true)
+            .on('click', () => {
+                tooltip.remove()
+            })
+
+        tooltip.append('rect')
+            .attr('width', TOOLTIP_WIDTH)
+            .attr('height', TOOLTIP_HEIGHT)
+            .attr('fill', '#fff')
+            .classed('chart-tooltip_bg', true)
+
+        tooltip.append('image')
+            .attr('height', TOOLTIP_WIDTH - TOOLTIP_IMAGE_OFFSET)
+            .attr('width', TOOLTIP_WIDTH - TOOLTIP_IMAGE_OFFSET)
+            .attr('x', TOOLTIP_IMAGE_OFFSET / 2)
+            .attr('y', TOOLTIP_IMAGE_OFFSET / 2)
+            .attr('xlink:href', point.imageUrl)
+            .classed('chart-tooltip_image', true)
+
+        tooltip.append('text')
+            .text(point.label)
+            .attr('text-anchor', 'middle')
+            .attr('x', TOOLTIP_WIDTH / 2)
+            .attr('y', TOOLTIP_WIDTH + TOOLTIP_IMAGE_OFFSET / 2 + 5)
+            .style('font-size', '1.6rem')
+            .classed('chart-tooltip_label', true)
     }
 
     render () {
@@ -123,6 +146,7 @@ export default class App extends React.Component {
                        />
                    ))}
                </g>
+               <g className="tooltips-group" />
            </svg>
         )
     }
